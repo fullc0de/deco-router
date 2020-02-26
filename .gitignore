@@ -1,0 +1,14 @@
+node_modules
+
+# Local development
+.env.*
+.DS_Store
+
+# TypeScript
+build
+
+# WebStorm
+.idea
+
+# Visual Studio Code
+.vscode
