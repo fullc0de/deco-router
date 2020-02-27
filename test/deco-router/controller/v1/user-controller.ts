@@ -1,5 +1,5 @@
-import { Route, Context } from "../../../../src/deco-router";
-import { ControllerInterface } from "../../../../src/deco-router/interface/controller-interface";
+import { Route, Context } from "../../../../src";
+import { ControllerInterface } from "../../../../src/interface/controller-interface";
 
 @Route("users", "v1")
 export class UserController implements ControllerInterface {

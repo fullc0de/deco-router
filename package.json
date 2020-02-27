@@ -1,11 +1,13 @@
 {
   "name": "deco-router",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "This package provides several decorators to make it easy to build up routers for APIs with a multiple version control, parameter validations and pre/post processing injector.",
-  "main": "index.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "test": "jest"
   },
+  "prepublish": "tsc",
   "keywords": [
     "node",
     "npm",

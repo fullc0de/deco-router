@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { getStore } from '../../src/deco-router';
+import { getStore } from '../../src';
 
 describe('metadata > storage', () => {
     it('should make proper routing information with input ', () => {
