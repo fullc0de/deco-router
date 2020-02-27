@@ -1,5 +1,5 @@
 {
-  "name": "deco-router",
+  "name": "deco-versioning-router",
   "version": "0.1.1",
   "description": "This package provides several decorators to make it easy to build up routers for APIs with a multiple version control, parameter validations and pre/post processing injector.",
   "main": "dist/src/index.js",
