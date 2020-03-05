@@ -1,6 +1,6 @@
-import { MetadataStorage } from '../../src/metadata/metadata-storage';
-import { Context } from '../../src';
-import { InjectorInterface } from '../../src/interface/injector-interface';
+import { MetadataStorage } from '../src/metadata/metadata-storage';
+import { Context } from '../src';
+import { InjectorInterface } from '../src/interface/injector-interface';
 
 class UserV1 {
     index(ctx: Context) {}

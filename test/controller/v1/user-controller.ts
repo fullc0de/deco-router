@@ -1,5 +1,5 @@
-import { Route, Context } from "../../../../src";
-import { ControllerInterface } from "../../../../src/interface/controller-interface";
+import { Route, Context, PostParam } from "../../../src";
+import { ControllerInterface } from "../../../src/interface/controller-interface";
 
 @Route("users", "v1")
 export class UserController implements ControllerInterface {
@@ -21,10 +21,23 @@ export class UserController implements ControllerInterface {
             body: { message: "user-controller-put-v1" }
         };
     }
+
+    @PostParam("age", { required: true })
+    @PostParam("country", { required: false })
+    @PostParam("isAdmin", { 
+        required: true,
+        validate: (boolString) => boolString === "true",
+        errorMessage: "This api is only allowed to call by an admin user"
+    })
     public async post(ctx: Context) {
         ctx.response = {
             statusCode: 200,
-            body: { message: "user-controller-post-v1" }
+            body: { 
+                message: "user-controller-post-v1",
+                age: ctx.request.body.age,
+                country: ctx.request.body.country,
+                isAdmin: ctx.request.body.isAdmin
+            }
         };
     }
     public async delete(ctx: Context) {

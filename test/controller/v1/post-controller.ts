@@ -1,5 +1,5 @@
-import { Route, Context } from "../../../../src";
-import { ControllerInterface } from "../../../../src/interface/controller-interface";
+import { Route, Context } from "../../../src";
+import { ControllerInterface } from "../../../src/interface/controller-interface";
 
 @Route("posts", "v1")
 export class PostController implements ControllerInterface {

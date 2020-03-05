@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { getStore } from '../../src';
+import { getStore } from '../src';
 
-describe('metadata > storage', () => {
+describe('decorator > Route', () => {
     it('should make proper routing information with input ', () => {
 
         let UserV1 = require("./controller/v1/user-controller")

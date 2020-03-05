@@ -3,7 +3,9 @@ import { RequestParamOptions, RequestParamMetadata } from '../interface/common-i
 
 export function QueryParam(paramKey: string, options?: RequestParamOptions) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        console.log(`ValidateQueryParam: called, target=${target}, propertyKey=${propertyKey}, descriptor=${descriptor}, paramKey=${paramKey}`);
+        if (process.env.DEBUG_VERSIONABLE_EXPRESS_ROUTER === "1") {
+            console.log(`ValidateQueryParam: called, target=${target}, propertyKey=${propertyKey}, descriptor=${descriptor}, paramKey=${paramKey}`);
+        }
 
         if (options == null) {
             options = { 

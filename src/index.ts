@@ -61,7 +61,9 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
             afterCallback: makeAfterCallback(info.routeOptions)
         }
 
-        console.log(`path = [${info.method}][${info.path}]`);
+        if (process.env.DEBUG_VERSIONABLE_EXPRESS_ROUTER === "1") {
+            console.log(`path = [${info.method}][${info.path}]`);
+        }
         switch (info.method) {
             case "get":
                 router.get(info.path, makeExpressRoute(callbacks));
@@ -82,7 +84,10 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
 function makeReqParamValidateCallback(metadataList: RequestParamMetadata[]) {
     return async (ctx: Context) => {
         metadataList.forEach((data) => {
-            console.log(`key=${data.paramKey}, required=${data.options.required.toString()}, type=${data.type}`);
+            if (process.env.DEBUG_VERSIONABLE_EXPRESS_ROUTER === "1") {
+                console.log(`key=${data.paramKey}, required=${data.options.required.toString()}, type=${data.type}`);
+            }
+            
             let value: string | undefined = undefined;
             if (data.type == "query") {
                 value = ctx.request.query[data.paramKey];
