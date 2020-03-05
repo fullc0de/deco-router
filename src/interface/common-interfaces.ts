@@ -20,17 +20,10 @@ interface Context {
     additional: ParamDict<any>
 }
 
-type ExpressFunction = (req: any, res: any) => void;
+type ExpressCallbackFunction = (req: any, res: any) => void;
 type RoutableFunction = (ctx: Context) => Promise<void>;
 type InjectableFunction = (ctx: Context) => Promise<void>;
 type ValidatableFunction = (ctx: Context) => Promise<void>;
-
-interface RouterInterface {
-    get: ExpressFunction
-    put: ExpressFunction
-    post: ExpressFunction
-    delete: ExpressFunction
-}
 
 interface RequestParamOptions {
     required: boolean,
@@ -49,11 +42,10 @@ export {
     HttpRequest,
     HttpResponse,
     Context,
-    ExpressFunction,
+    ExpressCallbackFunction as ExpressFunction,
     RoutableFunction,
     InjectableFunction,
     ValidatableFunction,
-    RouterInterface,
     RequestParamOptions,
     RequestParamMetadata
 }

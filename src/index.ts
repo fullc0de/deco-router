@@ -4,13 +4,14 @@ import * as path from 'path';
 import { getStore } from './metadata/index';
 import makeExpressRoute from './express-router';
 import { InjectorInterface } from './interface/injector-interface';
-import { Context, RouterInterface } from "./interface/common-interfaces";
+import { Context } from "./interface/common-interfaces";
 import { RouteMetadataOptionsInterface } from './metadata/metadata-storage';
 import { RouteCallbacks } from './express-router';
 import { RequestParamMetadata } from './interface/common-interfaces';
 import { ValidateQueryParamMap, ValidatePostParamMap } from './reflect-symbols';
 import { DecoRouterError } from './deco-router-error';
 import { ControllerInterface } from './interface/controller-interface';
+import { Router } from "express";
 export * from "./decorator/route";
 export * from "./decorator/user-auth";
 export * from "./decorator/post-param";
@@ -31,7 +32,7 @@ export function registerAfterInjectors(injectors: InjectorInterface[]) {
     afterInjectors = injectors;
 }
 
-export function buildRouter(router: RouterInterface, prefix: string, controllersOrBasePath: ControllerInterface[] | string) {
+export function buildRouter(router: Router, prefix: string, controllersOrBasePath: ControllerInterface[] | string) {
     if (typeof controllersOrBasePath == "string") {
         fs.readdirSync(controllersOrBasePath, {withFileTypes: true}).forEach( (dir) => {
             if (dir.name[0] === 'v') {
