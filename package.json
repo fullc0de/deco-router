@@ -1,6 +1,6 @@
 {
   "name": "versionable-express-router",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "This package provides several decorators to make it easy to build up routers for APIs with a multiple version control, parameter validations and pre/post processing injector.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
