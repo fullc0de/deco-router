@@ -11,7 +11,9 @@ interface Context {
     additional: Dict<any>
 }
 
-type ExpressCallbackFunction = (req: Request, res: Response, next: NextFunction) => void;
+type ExpressHandler = (req: Request, res: Response, next: NextFunction) => void;
+type ExpressErrorHandler = (error: any, req: Request, res: Response, next: NextFunction) => void;
+type ExpressCallbackHandler = ExpressHandler | ExpressErrorHandler;
 type RoutableFunction = (ctx: Context) => Promise<void>;
 type InjectableFunction = (ctx: Context) => Promise<void>;
 type ValidatableFunction = (ctx: Context) => Promise<void>;
@@ -33,7 +35,9 @@ export {
     HttpRequest,
     HttpResponse,
     Context,
-    ExpressCallbackFunction,
+    ExpressHandler,
+    ExpressErrorHandler,
+    ExpressCallbackHandler,
     RoutableFunction,
     InjectableFunction,
     ValidatableFunction,

@@ -4,7 +4,7 @@ import * as path from 'path';
 import { getStore } from './metadata/index';
 import makeExpressRoute from './express-router';
 import { InjectorInterface } from './interface/injector-interface';
-import { Context, ExpressCallbackFunction, Dict } from "./interface/common-interfaces";
+import { Context, ExpressCallbackHandler, Dict } from "./interface/common-interfaces";
 import { RouteMetadataOptionsInterface } from './metadata/metadata-storage';
 import { RouteCallbacks } from './express-router';
 import { RequestParamMetadata } from './interface/common-interfaces';
@@ -46,7 +46,7 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
     pathInfos.forEach((info) => {
         const queryParamMetaList = Reflect.getOwnMetadata(ValidateQueryParamMap, info.ctor, info.handler.name);
         const postParamMetaList = Reflect.getOwnMetadata(ValidatePostParamMap, info.ctor, info.handler.name);
-        let middlewareDic: Dict<ExpressCallbackFunction[]> = Reflect.getOwnMetadata(MiddlewareMap, info.ctor, info.handler.name);
+        let middlewareDic: Dict<ExpressCallbackHandler[]> = Reflect.getOwnMetadata(MiddlewareMap, info.ctor, info.handler.name);
 
         let validateMetaList: RequestParamMetadata[] = []
         if (queryParamMetaList instanceof Array) {
@@ -68,8 +68,8 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
         }
 
         let shouldNext = false;
-        let beforeMiddlewares: ExpressCallbackFunction[] = [];
-        let afterMiddlewares: ExpressCallbackFunction[] = [];
+        let beforeMiddlewares: ExpressCallbackHandler[] = [];
+        let afterMiddlewares: ExpressCallbackHandler[] = [];
         if (middlewareDic) {
             if (middlewareDic["before"]) {
                 beforeMiddlewares.push(...middlewareDic["before"]);
@@ -80,8 +80,8 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
             }
         }
 
-        let mainRoute: ExpressCallbackFunction = makeExpressRoute(callbacks, shouldNext);
-        const middlewareList: ExpressCallbackFunction[] = [...beforeMiddlewares, mainRoute, ...afterMiddlewares];
+        let mainRoute: ExpressCallbackHandler = makeExpressRoute(callbacks, shouldNext);
+        const middlewareList: ExpressCallbackHandler[] = [...beforeMiddlewares, mainRoute, ...afterMiddlewares];
 
         switch (info.method) {
             case "get":
