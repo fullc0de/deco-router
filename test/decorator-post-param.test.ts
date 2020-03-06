@@ -2,6 +2,7 @@ import { buildRouter } from "../src/index";
 import express, { Router } from "express";
 import path from "path";
 import request from "supertest";
+import { DecoRouterError } from "../src/deco-router-error";
 
 describe("decorator > PostParam", () => {
     test("normal behavior case", (done) => {
@@ -38,7 +39,11 @@ describe("decorator > PostParam", () => {
         const controllerPath = path.join(__dirname, 'controller');
         buildRouter(router, "api", controllerPath);
         app.use(router);
-    
+        app.use(function (err, req, res, next) {
+            let decoError: DecoRouterError = err;
+            res.status(decoError.statusCode).send({ error: decoError.message });
+        });
+
         request(app)
         .post("/api/v1/users")
         .send({
@@ -46,9 +51,11 @@ describe("decorator > PostParam", () => {
             isAdmin: "true"
         })
         .set("Accept", "application/json")
-        .expect(400, {
-            error: "'age' parameter is required. param_type: [post]"
-        }, done);
+        .expect(400)
+        .then(res => {
+            expect(res.body.error).toBe("'age' parameter is required. param_type: [post]");
+            done();
+        });
     });
 
     test("validate param if needed", (done) => {
@@ -59,7 +66,11 @@ describe("decorator > PostParam", () => {
         const controllerPath = path.join(__dirname, 'controller');
         buildRouter(router, "api", controllerPath);
         app.use(router);
-    
+        app.use(function (err, req, res, next) {
+            let decoError: DecoRouterError = err;
+            res.status(decoError.statusCode).send({ error: decoError.message });
+        });
+        
         request(app)
         .post("/api/v1/users")
         .send({
@@ -68,9 +79,11 @@ describe("decorator > PostParam", () => {
             isAdmin: "false"
         })
         .set("Accept", "application/json")
-        .expect(400, {
-            error: "This api is only allowed to call by an admin user"
-        }, done);
+        .expect(400)
+        .then(res => {
+            expect(res.body.error).toBe("This api is only allowed to call by an admin user");
+            done();
+        });
     });
 
     it("should be overriden by latest version of the controller", (done) => {

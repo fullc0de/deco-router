@@ -11,7 +11,7 @@ export interface RouteCallbacks {
 export default function makeExpressRoute(callbacks: RouteCallbacks, shouldNext: boolean = false): ExpressCallbackFunction {
     return async (req, res, next) => {
         if (callbacks.routeCallback === undefined) {
-            res.status(500).send({ error: "No routing function defined"});
+            next(new DecoRouterError(500, "No routing function defined"));
             return;
         }
 
@@ -39,11 +39,11 @@ export default function makeExpressRoute(callbacks: RouteCallbacks, shouldNext: 
             if (shouldNext) {
                 next();
             }
-        } catch (e) {
+        } catch (e) {            
             if (e instanceof DecoRouterError) {
-                res.status(e.statusCode).send({ error: `${e.message}`});
+                next(e);
             } else {
-                res.status(500).send({ error: `${e.message}`});
+                next(new DecoRouterError(500, e.message));
             }
         }
     };

@@ -2,6 +2,7 @@ import { buildRouter } from "../src/index";
 import express, { Router } from "express";
 import path from "path";
 import request from "supertest";
+import { DecoRouterError } from "../src/deco-router-error";
 
 describe("decorator > QueryParam", () => {
     test("normal behavior case", (done) => {
@@ -33,13 +34,19 @@ describe("decorator > QueryParam", () => {
         const controllerPath = path.join(__dirname, 'controller');
         buildRouter(router, "api", controllerPath);
         app.use(router);
-    
+        app.use(function (err, req, res, next) {
+            let decoError: DecoRouterError = err;
+            res.status(decoError.statusCode).send({ error: decoError.message });
+        });
+        
         request(app)
         .get("/api/v2/posts/111/comments/22?filter=interest&isAdmin=true")
         .set("Accept", "application/json")
-        .expect(400, {
-            error: "'category' parameter is required. param_type: [query]"
-        }, done);
+        .expect(400)
+        .then(res => {
+            expect(res.body.error).toBe("'category' parameter is required. param_type: [query]");
+            done();
+        });
     });
 
     test("validate param if needed", (done) => {
@@ -50,12 +57,18 @@ describe("decorator > QueryParam", () => {
         const controllerPath = path.join(__dirname, 'controller');
         buildRouter(router, "api", controllerPath);
         app.use(router);
-    
+        app.use(function (err, req, res, next) {
+            let decoError: DecoRouterError = err;
+            res.status(decoError.statusCode).send({ error: decoError.message });
+        });
+
         request(app)
         .get("/api/v2/posts/111/comments/22?filter=interest&category=game&isAdmin=false")        
         .set("Accept", "application/json")
-        .expect(400, {
-            error: "This api is only allowed to call by an admin user"
-        }, done);
+        .expect(400)
+        .then(res => {
+            expect(res.body.error).toBe("This api is only allowed to call by an admin user");
+            done();
+        });
     });
 });
