@@ -1,4 +1,4 @@
-import { RoutableFunction, ExpressFunction, Context, InjectableFunction, ValidatableFunction } from './interface/common-interfaces';
+import { RoutableFunction, ExpressCallbackFunction, Context, InjectableFunction, ValidatableFunction } from './interface/common-interfaces';
 import { DecoRouterError } from './deco-router-error';
 
 export interface RouteCallbacks {
@@ -8,20 +8,16 @@ export interface RouteCallbacks {
     afterCallback?: InjectableFunction
 }
 
-export default function makeExpressRoute(callbacks: RouteCallbacks): ExpressFunction {
-    return async (req, res) => {
+export default function makeExpressRoute(callbacks: RouteCallbacks, shouldNext: boolean = false): ExpressCallbackFunction {
+    return async (req, res, next) => {
         if (callbacks.routeCallback === undefined) {
             res.status(500).send({ error: "No routing function defined"});
             return;
         }
 
         let context: Context = {
-            request: {
-                body: req.body,
-                query: req.query,
-                params: req.params,
-                headers: req.headers
-            },
+            request: req,
+            response: res,
             additional: {}
         }
         try {
@@ -40,14 +36,8 @@ export default function makeExpressRoute(callbacks: RouteCallbacks): ExpressFunc
                 await callbacks.afterCallback(context);
             }
 
-            if (context.response !== undefined) {
-                if (context.response.headers !== undefined) {
-                    res.set(context.response.headers);
-                }
-                res.type('json');
-                res.status(context.response.statusCode).send(context.response.body);    
-            } else {
-                res.status(500).send({ error: `a response of a context is undefined`});
+            if (shouldNext) {
+                next();
             }
         } catch (e) {
             if (e instanceof DecoRouterError) {

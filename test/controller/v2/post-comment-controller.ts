@@ -4,10 +4,9 @@ import { ControllerInterface } from "../../../src/interface/controller-interface
 @Route("posts/:postId/comments", "v2")
 export class PostCommentController implements ControllerInterface {
     public async index(ctx: Context) {
-        ctx.response = {
-            statusCode: 200,
-            body: { message: "post-comment-controller-index-v2" }
-        };
+        ctx.response.status(200).json({
+            message: "post-comment-controller-index-v2"
+        });
     }
 
     @QueryParam("filter", { required: false })
@@ -18,14 +17,11 @@ export class PostCommentController implements ControllerInterface {
         errorMessage: "This api is only allowed to call by an admin user"
     })
     public async show(ctx: Context) {
-        ctx.response = {
-            statusCode: 200,
-            body: { 
-                message: "post-comment-controller-show-v2",
-                filter: ctx.request.query.filter,
-                category: ctx.request.query.category,
-                isAdmin: ctx.request.query.isAdmin
-            }
-        };
+        ctx.response.status(200).json({
+            message: "post-comment-controller-show-v2",
+            filter: ctx.request.query.filter,
+            category: ctx.request.query.category,
+            isAdmin: ctx.request.query.isAdmin
+        });
     }
 }

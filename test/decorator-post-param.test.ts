@@ -72,4 +72,23 @@ describe("decorator > PostParam", () => {
             error: "This api is only allowed to call by an admin user"
         }, done);
     });
+
+    it("should be overriden by latest version of the controller", (done) => {
+
+        let app = express();
+        app.use(express.json());
+        const router = Router();
+        const controllerPath = path.join(__dirname, 'controller');
+        buildRouter(router, "api", controllerPath);
+        app.use(router);
+    
+        request(app)
+        .post("/api/v2/users")
+        .send({
+            country: "Korea",
+            isAdmin: "false"
+        })
+        .set("Accept", "application/json")
+        .expect(200, done);
+    });
 });

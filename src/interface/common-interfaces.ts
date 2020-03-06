@@ -1,26 +1,17 @@
+import { NextFunction, Request, Response } from "express";
 
-interface ParamDict<T> { [key: string]: T };
+interface Dict<T> { [key: string]: T };
 
-interface HttpRequest {
-    readonly body: ParamDict<string>
-    readonly query: ParamDict<string>
-    readonly params: ParamDict<string>
-    readonly headers: ParamDict<string>
-};
-
-interface HttpResponse {
-    headers?: {}
-    statusCode: number
-    body: string | {}
-};
+type HttpRequest = Request;
+type HttpResponse = Response;
 
 interface Context {
     request: HttpRequest
-    response?: HttpResponse
-    additional: ParamDict<any>
+    response: HttpResponse
+    additional: Dict<any>
 }
 
-type ExpressCallbackFunction = (req: any, res: any) => void;
+type ExpressCallbackFunction = (req: Request, res: Response, next: NextFunction) => void;
 type RoutableFunction = (ctx: Context) => Promise<void>;
 type InjectableFunction = (ctx: Context) => Promise<void>;
 type ValidatableFunction = (ctx: Context) => Promise<void>;
@@ -38,11 +29,11 @@ interface RequestParamMetadata {
 }
 
 export {
-    ParamDict,
+    Dict,
     HttpRequest,
     HttpResponse,
     Context,
-    ExpressCallbackFunction as ExpressFunction,
+    ExpressCallbackFunction,
     RoutableFunction,
     InjectableFunction,
     ValidatableFunction,

@@ -6,9 +6,9 @@ import { TestAuthInjector } from "../../test-auth-injecter";
 @UserAuth(new TestAuthInjector())
 export class AuthController implements ControllerInterface {
     public async index(ctx: Context) {
-        ctx.response = {
-            statusCode: 200,
-            body: { token: ctx.additional["token"] }
-        };
+
+        ctx.response.status(200).json({
+            token: ctx.additional["token"]
+        });
     }
 }

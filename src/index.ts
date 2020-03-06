@@ -4,11 +4,11 @@ import * as path from 'path';
 import { getStore } from './metadata/index';
 import makeExpressRoute from './express-router';
 import { InjectorInterface } from './interface/injector-interface';
-import { Context } from "./interface/common-interfaces";
+import { Context, ExpressCallbackFunction, Dict } from "./interface/common-interfaces";
 import { RouteMetadataOptionsInterface } from './metadata/metadata-storage';
 import { RouteCallbacks } from './express-router';
 import { RequestParamMetadata } from './interface/common-interfaces';
-import { ValidateQueryParamMap, ValidatePostParamMap } from './reflect-symbols';
+import { ValidateQueryParamMap, ValidatePostParamMap, MiddlewareMap } from "./reflect-symbols";
 import { DecoRouterError } from './deco-router-error';
 import { ControllerInterface } from './interface/controller-interface';
 import { Router } from "express";
@@ -45,6 +45,7 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
     pathInfos.forEach((info) => {
         const queryParamMetaList = Reflect.getOwnMetadata(ValidateQueryParamMap, info.ctor, info.handler.name);
         const postParamMetaList = Reflect.getOwnMetadata(ValidatePostParamMap, info.ctor, info.handler.name);
+        let middlewareDic: Dict<ExpressCallbackFunction[]> = Reflect.getOwnMetadata(MiddlewareMap, info.ctor, info.handler.name);
 
         let validateMetaList: RequestParamMetadata[] = []
         if (queryParamMetaList instanceof Array) {
@@ -64,18 +65,35 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
         if (process.env.DEBUG_VERSIONABLE_EXPRESS_ROUTER === "1") {
             console.log(`path = [${info.method}][${info.path}]`);
         }
+
+        let shouldNext = false;
+        let beforeMiddlewares: ExpressCallbackFunction[] = [];
+        let afterMiddlewares: ExpressCallbackFunction[] = [];
+        if (middlewareDic) {
+            if (middlewareDic["before"]) {
+                beforeMiddlewares.push(...middlewareDic["before"]);
+            }
+            if (middlewareDic["after"]) {
+                afterMiddlewares.push(...middlewareDic["after"]);
+                shouldNext = true;
+            }
+        }
+
+        let mainRoute: ExpressCallbackFunction = makeExpressRoute(callbacks, shouldNext);
+        const middlewareList: ExpressCallbackFunction[] = [...beforeMiddlewares, mainRoute, ...afterMiddlewares];
+
         switch (info.method) {
             case "get":
-                router.get(info.path, makeExpressRoute(callbacks));
+                router.get(info.path, middlewareList);
                 break;
             case "post":
-                router.post(info.path, makeExpressRoute(callbacks));
+                router.post(info.path, middlewareList);
                 break;
             case "put":
-                router.put(info.path, makeExpressRoute(callbacks));
+                router.put(info.path, middlewareList);
                 break;
             case "delete":
-                router.delete(info.path, makeExpressRoute(callbacks));
+                router.delete(info.path, middlewareList);
                 break;
         }
     });
