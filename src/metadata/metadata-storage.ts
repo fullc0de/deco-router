@@ -2,6 +2,7 @@ import { RoutableFunction } from "../interface/common-interfaces";
 import { ControllerInterface } from '../interface/controller-interface';
 import { InjectorInterface } from '../interface/injector-interface';
 import { deepCopy, prevVer } from '../util';
+import { RouteOptions } from "../decorator/route";
 
 interface RouteMetadataInterface {
     version: string,
@@ -12,7 +13,14 @@ interface RouteMetadataInterface {
 }
 
 export interface RouteMetadataOptionsInterface {
-    userAuthInjector?: InjectorInterface
+    /**
+     * an authenticator passed through UserAuth decorator.
+     */
+    userAuthInjector?: InjectorInterface,
+    /**
+     * options passed through Route decorator as a parameter.
+     */
+    routeParamOptions?: RouteOptions
 }
 
 export interface RouteInfo {
@@ -95,6 +103,8 @@ export class MetadataStorage {
                 pathPrefix += prefix;
             }
             versionMap[key].forEach((route) => {
+                const treatAsAction: boolean = route.options.routeParamOptions?.treatAsAction || false;
+
                 if (route.handlers.index) {
                     routeInfos.push({
                         method: "get",
@@ -106,13 +116,15 @@ export class MetadataStorage {
                 }
 
                 if (route.handlers.show) {
-                    routeInfos.push({
-                        method: "get",
-                        path: `${pathPrefix}/${route.version}/${route.path}/:id`,
-                        ctor: route.ctor,
-                        handler: route.handlers.show,
-                        routeOptions: route.options
-                    })    
+                    if (treatAsAction === false) {
+                        routeInfos.push({
+                            method: "get",
+                            path: `${pathPrefix}/${route.version}/${route.path}/:id`,
+                            ctor: route.ctor,
+                            handler: route.handlers.show,
+                            routeOptions: route.options
+                        })
+                    }
                 }
 
                 if (route.handlers.post) {
@@ -128,7 +140,7 @@ export class MetadataStorage {
                 if (route.handlers.put) {
                     routeInfos.push({
                         method: "put",
-                        path: `${pathPrefix}/${route.version}/${route.path}/:id`,
+                        path: `${pathPrefix}/${route.version}/${route.path}${treatAsAction ? "" : "/:id"}`,
                         ctor: route.ctor,
                         handler: route.handlers.put,
                         routeOptions: route.options
@@ -138,7 +150,7 @@ export class MetadataStorage {
                 if (route.handlers.delete) {
                     routeInfos.push({
                         method: "delete",
-                        path: `${pathPrefix}/${route.version}/${route.path}/:id`,
+                        path: `${pathPrefix}/${route.version}/${route.path}${treatAsAction ? "" : "/:id"}`,
                         ctor: route.ctor,
                         handler: route.handlers.delete,
                         routeOptions: route.options

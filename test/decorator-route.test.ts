@@ -8,6 +8,7 @@ describe('decorator > Route', () => {
         let PostV1 = require("./controller/v1/post-controller")
         let UserV2 = require("./controller/v2/user-controller")
         let PostCommentV2 = require("./controller/v2/post-comment-controller")
+        let SearchV2 = require("./controller/v2/search-controller")
 
         let routeInfos = getStore().buildRoutes("api");
 
@@ -41,6 +42,12 @@ describe('decorator > Route', () => {
         expect(routeInfos.findIndex((r) => r.path === "/api/v2/posts/:postId/comments" && r.method === "get")).not.toBe(-1);
         expect(routeInfos.findIndex((r) => r.path === "/api/v2/posts/:postId/comments/:id" && r.method === "get")).not.toBe(-1);
 
-        expect(routeInfos.length).toEqual(22);
+        expect(routeInfos.findIndex((r) => r.path === "/api/v2/search" && r.method === "get")).not.toBe(-1);
+        expect(routeInfos.findIndex((r) => r.path === "/api/v2/search/:id" && r.method === "get")).toBe(-1);
+        expect(routeInfos.findIndex((r) => r.path === "/api/v2/search" && r.method === "post")).not.toBe(-1);
+        expect(routeInfos.findIndex((r) => r.path === "/api/v2/search" && r.method === "put")).not.toBe(-1);
+        expect(routeInfos.findIndex((r) => r.path === "/api/v2/search" && r.method === "delete")).not.toBe(-1);
+
+        expect(routeInfos.length).toEqual(26);
     });
 });
