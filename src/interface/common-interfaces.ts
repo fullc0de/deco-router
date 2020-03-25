@@ -20,7 +20,7 @@ type ValidatableFunction = (ctx: Context) => Promise<void>;
 
 interface RequestParamOptions {
     required: boolean,
-    validate?: (value: string) => boolean,
+    validate?: (value: any) => boolean,
     errorMessage?: string
 }
 

@@ -107,7 +107,7 @@ function makeReqParamValidateCallback(metadataList: RequestParamMetadata[]) {
                 console.log(`key=${data.paramKey}, required=${data.options.required.toString()}, type=${data.type}`);
             }
             
-            let value: string | undefined = undefined;
+            let value: any | undefined = undefined;
             if (data.type == "query") {
                 value = ctx.request.query[data.paramKey];
             } else if (data.type == "post") {

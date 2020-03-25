@@ -19,11 +19,15 @@ export class UserController implements ControllerInterface {
         });
     }
 å
-    @PostParam("age", { required: true })
+    @PostParam("age", { 
+        required: true,
+        validate: (value) => (Number(value) > 10),
+        errorMessage: "A person who is over 10 years old is only permitted"
+    })
     @PostParam("country", { required: false })
     @PostParam("isAdmin", { 
         required: true,
-        validate: (boolString) => boolString === "true",
+        validate: (value) => value == "true",
         errorMessage: "This api is only allowed to call by an admin user"
     })
     public async post(ctx: Context) {
