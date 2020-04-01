@@ -2,7 +2,9 @@ import { Route, Context } from "../../../src";
 import { ControllerInterface } from "../../../src/interface/controller-interface";
 import { UserController as V1 } from '../v1/user-controller';
 import { Middleware } from "../../../src/decorator/middleware";
+import { ErrorMiddleware } from "../../../src/decorator/error-middleware";
 import { testMiddleware, drainMiddleware, afterMiddleware } from "../../test-middleware";
+import { DecoRouterError } from "../../../src/deco-router-error";
 
 @Route("users", "v2")
 export class UserController extends V1 implements ControllerInterface {
@@ -22,8 +24,20 @@ export class UserController extends V1 implements ControllerInterface {
     }
 
     @Middleware([afterMiddleware], "after")
+    @ErrorMiddleware([(err, req, res, next) => {
+        (req as any).errorMessage = "error";
+    }])
     public async put(ctx: Context) {
         (ctx.request as any).message = "user-controller-post-v2"
+    }
+
+    @ErrorMiddleware([(err, req, res, next) => {
+        res.status(500).json({
+            errorMessage: err.message
+        })
+    }])
+    public async delete(ctx: Context) {
+        throw new DecoRouterError(500, "delete-error");
     }
 
     public async post(ctx: Context) {

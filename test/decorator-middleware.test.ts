@@ -51,6 +51,7 @@ describe("decorator > Middleware", () => {
         .then(res => {
             expect(res.body.message).toBe("user-controller-post-v2");
             expect(res.body.afterMessage).toBe("after-middleware");
+            expect(res.body.errorMessage).toBeUndefined();
             done();
         });
     });

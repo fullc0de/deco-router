@@ -4,11 +4,11 @@ import * as path from 'path';
 import { getStore } from './metadata/index';
 import makeExpressRoute from './express-router';
 import { InjectorInterface } from './interface/injector-interface';
-import { Context, ExpressCallbackHandler, Dict } from "./interface/common-interfaces";
+import { Context, ExpressCallbackHandler, Dict, ExpressHandler, ExpressErrorHandler } from "./interface/common-interfaces";
 import { RouteMetadataOptionsInterface } from './metadata/metadata-storage';
 import { RouteCallbacks } from './express-router';
 import { RequestParamMetadata } from './interface/common-interfaces';
-import { ValidateQueryParamMap, ValidatePostParamMap, MiddlewareMap } from "./reflect-symbols";
+import { ValidateQueryParamMap, ValidatePostParamMap, MiddlewareMap, ErrorMiddlewareMap } from "./reflect-symbols";
 import { DecoRouterError } from './deco-router-error';
 import { ControllerInterface } from './interface/controller-interface';
 import { Router } from "express";
@@ -46,7 +46,8 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
     pathInfos.forEach((info) => {
         const queryParamMetaList = Reflect.getOwnMetadata(ValidateQueryParamMap, info.ctor, info.handler.name);
         const postParamMetaList = Reflect.getOwnMetadata(ValidatePostParamMap, info.ctor, info.handler.name);
-        let middlewareDic: Dict<ExpressCallbackHandler[]> = Reflect.getOwnMetadata(MiddlewareMap, info.ctor, info.handler.name);
+        let middlewareDic: Dict<ExpressHandler[]> = Reflect.getOwnMetadata(MiddlewareMap, info.ctor, info.handler.name);
+        let errorMiddlewares: ExpressErrorHandler[] = Reflect.getOwnMetadata(ErrorMiddlewareMap, info.ctor, info.handler.name);
 
         let validateMetaList: RequestParamMetadata[] = []
         if (queryParamMetaList instanceof Array) {
@@ -68,8 +69,8 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
         }
 
         let shouldNext = false;
-        let beforeMiddlewares: ExpressCallbackHandler[] = [];
-        let afterMiddlewares: ExpressCallbackHandler[] = [];
+        let beforeMiddlewares: ExpressHandler[] = [];
+        let afterMiddlewares: ExpressHandler[] = [];
         if (middlewareDic) {
             if (middlewareDic["before"]) {
                 beforeMiddlewares.push(...middlewareDic["before"]);
@@ -79,9 +80,9 @@ export function buildRouter(router: Router, prefix: string, controllersOrBasePat
                 shouldNext = true;
             }
         }
-
-        let mainRoute: ExpressCallbackHandler = makeExpressRoute(callbacks, shouldNext);
-        const middlewareList: ExpressCallbackHandler[] = [...beforeMiddlewares, mainRoute, ...afterMiddlewares];
+        
+        let mainRoute: ExpressHandler = makeExpressRoute(callbacks, shouldNext);
+        const middlewareList: any[] = [...beforeMiddlewares, mainRoute, ...afterMiddlewares, ...(errorMiddlewares || [])];
 
         switch (info.method) {
             case "get":

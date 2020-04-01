@@ -3,6 +3,8 @@
  * https://blog.logrocket.com/4-different-techniques-for-copying-objects-in-javascript-511e422ceb1e/
  */
 
+import { ExpressCallbackHandler, ExpressHandler } from "./interface/common-interfaces";
+
 interface Dict<T> { [key: string]: T };
 
 export function deepCopy<T>(value: T): T {

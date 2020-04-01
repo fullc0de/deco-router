@@ -1,4 +1,4 @@
-import { RoutableFunction, ExpressCallbackHandler, Context, InjectableFunction, ValidatableFunction } from './interface/common-interfaces';
+import { RoutableFunction, Context, InjectableFunction, ValidatableFunction, ExpressHandler } from './interface/common-interfaces';
 import { DecoRouterError } from './deco-router-error';
 import { Request, Response, NextFunction } from "express";
 
@@ -9,7 +9,7 @@ export interface RouteCallbacks {
     afterCallback?: InjectableFunction
 }
 
-export default function makeExpressRoute(callbacks: RouteCallbacks, shouldNext: boolean = false): ExpressCallbackHandler {
+export default function makeExpressRoute(callbacks: RouteCallbacks, shouldNext: boolean = false): ExpressHandler {
     return async (req: Request, res: Response, next: NextFunction) => {
         if (callbacks.routeCallback === undefined) {
             next(new DecoRouterError(500, "No routing function defined"));

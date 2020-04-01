@@ -12,6 +12,7 @@ export function drainMiddleware(req: Request, res: Response, next: NextFunction)
 export function afterMiddleware(req: Request, res: Response, next: NextFunction) {
     res.status(200).send({
         message: (req as any).message,
-        afterMessage: "after-middleware"
+        errorMessage: (req as any).errorMessage,
+        afterMessage: "after-middleware",
     });
 }
