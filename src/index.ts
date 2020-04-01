@@ -17,6 +17,7 @@ export * from "./decorator/user-auth";
 export * from "./decorator/post-param";
 export * from "./decorator/query-param";
 export * from "./decorator/middleware";
+export * from "./decorator/error-middleware";
 export * from "./deco-router-error";
 export * from "./interface/controller-interface";
 export * from "./interface/injector-interface";
